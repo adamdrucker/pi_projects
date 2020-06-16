@@ -1,11 +1,13 @@
 from random import randint
 from random import seed
 import random
+import time
 import os
 
 
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 ALPHAUP = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+PUNC = ",.:;!?@#$%^&*-_`~/\[]{}()<>'\""   # 29 length
 
 # Seed to init random generator
 seed(random.randint(random.randint(0, 255), (random.randint(256, 511))))
@@ -32,7 +34,7 @@ def load_sheet(filename):
 
 def get_plaintext():
     plain_text = input("Please type your message: ")
-    return plain_text.lower()
+    return plain_text
 
 def load_file(filename):
     with open(filename, "r") as f:
@@ -50,27 +52,27 @@ def save_file(filename, data):
 
 ''' This function takes in a plaintext message and an OTP sheet from 
     the ones generated in the first menu option. Any characters not in
-    the ALPHABET variable are added as is to the CIPHERTEXT variable. The
-    ENCRYPTED value is derived from the index of each character in the ALPHABET
+    the ALPHABET/ALPHAUP/PUNC variablea are added as is to the CIPHERTEXT variable.
+    The ENCRYPTED value is derived from the index of each character in the ALPHABET
     plus the value in the 0-based corresponding position of the OTP text file.
-    This is then modulus divided by 26 and the corresponding character within
-    the 26-letter alphabet is chosen as the ciphertext character.
+    This is then modulus divided by the ength of the string and the corresponding
+    character athe index position is chosen as the ciphertext character.
 '''
 
 def encrypt(plaintext, sheet):
     ciphertext = ''
-    for position, character in enumerate(plaintext):
-        #print(position, character)
-        if character not in ALPHABET:
-            # This is not working as intended
-            if character in ALPHAUP:
-                encrypted = (ALPHAUP.index(character) + 5) % 26
-                ciphertext += ALPHAUP[encrypted]
-            else:
-                ciphertext += character
-        else:
+    for position, character in enumerate(plaintext):      
+        if character in ALPHABET:
             encrypted = (ALPHABET.index(character) + int(sheet[position])) % 26
             ciphertext += ALPHABET[encrypted]
+        elif character in ALPHAUP:
+            encrypted = (ALPHAUP.index(character) + int(sheet[position])) % 26
+            ciphertext += ALPHAUP[encrypted]
+        elif character in PUNC:
+            encrypted = (PUNC.index(character) + int(sheet[position])) % 29
+            ciphertext += PUNC[encrypted]
+        else:
+            ciphertext += character
             #print("Alphabet index char is: ", ALPHABET.index(character))
             #print("Sheet pos is: ", int(sheet[position]))
             #print("Value of encrypted is: ", encrypted)
@@ -88,16 +90,17 @@ def encrypt(plaintext, sheet):
 def decrypt(ciphertext, sheet):
     plaintext = ''
     for position, character in enumerate(ciphertext):
-        if character not in ALPHABET:
-            # This is not working as intended
-            if character in ALPHAUP:
-                decrypted = (ALPHAUP.index(character) + 5) % 26
-                plaintext += ALPHAUP[encrypted]
-            else:
-                plaintext += character
-        else:
+        if character in ALPHABET:
             decrypted = (ALPHABET.index(character) - int(sheet[position])) % 26
             plaintext += ALPHABET[decrypted]
+        elif character in ALPHAUP:
+            decrypted = (ALPHAUP.index(character) - int(sheet[position])) % 26
+            plaintext += ALPHAUP[decrypted]
+        elif character in PUNC:
+            decrypted = (PUNC.index(character) - int(sheet[position])) % 29
+            plaintext += PUNC[decrypted]
+        else:
+            plaintext += character
     return plaintext
 
 
@@ -125,19 +128,23 @@ def menu():
             sheet = load_sheet(filename)
             plaintext = get_plaintext()
             ciphertext = encrypt(plaintext, sheet)
+            # os.remove(filename)   # Deletes the OTP file used to encrypt
             filename = input("What will be the name of the encrypted file?: ")
             save_file(filename, ciphertext)
 
         elif choice == '3':
             filename = input("Type in the filename of the OTP you want to use: ")
             sheet = load_sheet(filename)
+            # os.remove(filename)   # Deletes the OTP file used to decrypt
             filename = input("Type the name of the file you wish to decrypt: ")
             ciphertext = load_file(filename)
             plaintext = decrypt(ciphertext, sheet)
             print("The message reads: ")
+            time.sleep(1)
             print('')
             print(plaintext)
             print('')
+            time.sleep(1)
 
         elif choice == '4':
             exit()
