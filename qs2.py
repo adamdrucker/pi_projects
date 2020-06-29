@@ -1,25 +1,26 @@
 from bottle import route, run, get, post, request
+from sitecrypt_bottle import *
 
-@route('/login')
-def login():
+@route('/message')
+def message_in():
     return '''
-        <form action="/login" method="post">
-            Username: <input name="username" type="text" />
-            Password: <input name="password" type="password" />
-            <input vaue="Login" type="submit" />
+        <form action="/encrypt" method="post">
+            Message: <input name="message" type="text" />
+            <input value="Encrypt message" type="submit" />
         </form>
     '''
 
-@route('/login', method='POST')
-def do_login():
-    username = request.forms.get('username')
-    password = request.forms.get('password')
-    if check_login(username, password):
-        return "<p>Your login information was correct.</p>"
-    else:
-        return "<p>Login failed.</p>"
-
-
+@post('/encrypted')
+def do_encrypt():
+    message = request.forms.get('message')
+    
+    generate_otp(100)
+    sheet = load_sheet("otp.txt")    
+    ciphertext = encrypt(message, sheet)
+    save_file("encrypted.txt", ciphertext)
+    ciphertext = load_file("encrypted.txt")
+    return ciphertext
+    
 
 
 
