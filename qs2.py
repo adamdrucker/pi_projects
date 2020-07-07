@@ -1,8 +1,9 @@
 from bottle import route, run, get, post, request, template, error
 from sitecrypt_bottle import *
 from captcha_bot import captcha
+import pyperclip as pc
 
-url = captcha() # How to get this random string used as the post URL???
+url = captcha()
 
 @route('/message')
 def message_in():
@@ -16,8 +17,9 @@ def message_in():
 @post('/encrypted')
 def do_encrypt():
     message = request.forms.get('message')
+    url = captcha()
+    global ciphertext
     
-
     # Functions called from 'sitecrypt_bottle'
     # 'Message' passed as argument
     generate_otp(len(message))
@@ -25,9 +27,7 @@ def do_encrypt():
     ciphertext = encrypt(message, sheet)
     save_file("encrypted.txt", ciphertext)
     ciphertext = load_file("encrypted.txt")
-    global ciphertext # this is apparently unadvisable
 
-   
       
     return '''
         <table style="width:50%", border=1px solid black>
@@ -37,7 +37,7 @@ def do_encrypt():
             </tr>
             <tr>
                 <td>{message}</td>
-                <td><a href=localhost:8080/message/{url}>Link</a></td>
+                <td><a href=localhost:8080/message/{url}>localhost:8080/message/{url}</a></td>
             </tr>
         </table>
     '''.format(message=ciphertext, url=url)
@@ -47,17 +47,32 @@ def do_encrypt():
 
 @route('/message/<url>')
 def show_message(url=url):
-    return ciphertext
+    sheet = load_sheet("otp.txt")
+    ciphertext = load_file("encrypted.txt")
+    plaintext = decrypt(ciphertext, sheet)
 
-    #return "localhost:8080/message/{url}".format(url=url)
+    return '''
+        <table style="width:50%", border=1px solid black>
+            <tr>
+                <th>Decrypted message</th>                
+            </tr>
+            <tr>
+                <td>{message}</td>                
+            </tr>
+        </table>
+    '''.format(message=plaintext)
 
-    # Ciphertext variable is out of scope (except when cast as a global var)
-    # This function can't reference it; furthermore it will need to be passed
-    # in to the decryption function, which is what this decorated URL should
-    # ultimately be calling and returning a value from
+
 
 # Try maybe @post decorator after this @route decorator to have it load a new page
 # that has the decrypted message?
+
+# Have the new page display the encrypted message, add a button to call decryption?
+
+# Issue: the two text files (OTP and encrypted) generated are stored locally -- how would
+# this work on a public website?
+
+# Copy button failed, unable to find out how to copy the link generated in the <a href> tag
 
 
 # ///////////////////////////////////////////////////////////////////////

@@ -50,11 +50,11 @@ def save_file(filename, data):
 
 ''' This function takes in a plaintext message and an OTP sheet from 
     the ones generated in the first menu option. Any characters not in
-    the ALPHABET/ALPHAUP/PUNC variablea are added as is to the CIPHERTEXT variable.
+    the ALPHABET/ALPHAUP/PUNC variables are added as is to the CIPHERTEXT variable.
     The ENCRYPTED value is derived from the index of each character in the ALPHABET
     plus the value in the 0-based corresponding position of the OTP text file.
-    This is then modulus divided by the ength of the string and the corresponding
-    character athe index position is chosen as the ciphertext character.
+    This is then modulus divided by the length of the string and the corresponding
+    character at the index position is chosen as the ciphertext character.
 '''
 
 def encrypt(plaintext, sheet):
@@ -102,34 +102,31 @@ def decrypt(ciphertext, sheet):
     return plaintext
 
 
+# --------------------------------------------------------------------------------
+#generate_otp(100)                       # Creates one 100-line text file called otp.txt
+#sheet = load_sheet("otp.txt")           # Loads sheet for use in encryption
+#plaintext = get_plaintext()             # Asks user for input
+#ciphertext = encrypt(plaintext, sheet)  # Encrypts user input
+#save_file("encrypted.txt", ciphertext)  # Saves encrypted message as encrypted.txt
+#print(load_file("encrypted.txt"))       # Prints ciphertext
 
-generate_otp(100)                       # Creates one 100-line text file called otp.txt
-sheet = load_sheet("otp.txt")           # Loads sheet for use in encryption
-plaintext = get_plaintext()             # Asks user for input
-ciphertext = encrypt(plaintext, sheet)  # Encrypts user input
-save_file("encrypted.txt", ciphertext)  # Saves encrypted message as encrypted.txt
-print(load_file("encrypted.txt"))       # Prints ciphertext
+#time.sleep(2)
+#print("Decrypting previous message...")
+#time.sleep(2)
 
-time.sleep(2)
-print("Decrypting previous message...")
-time.sleep(2)
+#ciphertext = load_file("encrypted.txt") # Loads encrypted contents into variable
+#plaintext = decrypt(ciphertext, sheet)  # Decryption assigned to plaintext variable
+#print(plaintext)
 
-ciphertext = load_file("encrypted.txt") # Loads encrypted contents into variable
-plaintext = decrypt(ciphertext, sheet)  # Decryption assigned to plaintext variable
-print(plaintext)
-
-time.sleep(1)
-print("Removing One-Time Pad...")
-os.remove("otp.txt")    # Delete otp file from local directory
-time.sleep(0.5)
-print("Removing encrypted text file...")
-os.remove("encrypted.txt")  # Delete encrypted text file from local directory
-
+#time.sleep(1)
+#print("Removing One-Time Pad...")
+#os.remove("otp.txt")    # Delete otp file from local directory
+#time.sleep(0.5)
+#print("Removing encrypted text file...")
+#os.remove("encrypted.txt")  # Delete encrypted text file from local directory
+# --------------------------------------------------------------------------------
 # How would both of those deletes work in the context of the website? Where would they
 # initially be stored?
 
 # Turn this stuff into functions
 
-# This has to be imported into the bottle file, then input through the webpage needs
-# to be submitted through here as the 'plaintext' variable, processed, then
-# returned to the webpage and printed out
